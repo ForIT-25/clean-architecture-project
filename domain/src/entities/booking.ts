@@ -1,5 +1,6 @@
-export interface Booking {
-  id: string;
+import { Entity } from "./entity";
+
+export interface Booking extends Entity {
   buyDate: Date;
   reserveDate: Date;
   days: number;

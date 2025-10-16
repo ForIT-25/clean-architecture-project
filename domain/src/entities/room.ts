@@ -1,3 +1,5 @@
+import { Entity } from "./entity";
+
 export const ROOMTYPES = {
   SINGLE: "single",
   DOUBLE: "double",
@@ -7,8 +9,7 @@ export const ROOMTYPES = {
 
 export type RoomType = (typeof ROOMTYPES)[keyof typeof ROOMTYPES];
 
-export interface Room {
-  id: string;
+export interface Room extends Entity {
   name: string;
   type: RoomType;
   description: string;
