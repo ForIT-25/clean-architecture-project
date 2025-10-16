@@ -1,4 +1,4 @@
-import { Hotel } from '../../entities/hotel';
+import { Hotel } from "../../entities/hotel";
 
 export interface CreateHotelParams {
   id: string;
@@ -8,8 +8,8 @@ export interface CreateHotelParams {
 }
 
 export function createHotel(params: CreateHotelParams): Hotel {
-  if (!params.name || params.name.trim() === '') {
-    throw new Error('Hotel name cannot be empty');
+  if (!params.name || params.name.trim() === "") {
+    throw new Error("Hotel name cannot be empty");
   }
 
   return {

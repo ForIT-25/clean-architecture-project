@@ -1,4 +1,4 @@
-import { User } from '../../entities/user';
+import { User } from "../../entities/user";
 
 export function createUser(
   id: string,
@@ -10,6 +10,6 @@ export function createUser(
     id,
     name,
     email,
-    password
+    password,
   };
-};
+}

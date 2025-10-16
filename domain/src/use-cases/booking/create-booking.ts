@@ -18,4 +18,4 @@ export function createBooking(input: CreateBookingInput) {
     idRoom: input.idRoom,
     price: input.price,
   };
-};
+}

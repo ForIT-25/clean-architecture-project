@@ -1,8 +1,8 @@
 export const ROOMTYPES = {
-  SINGLE: 'single',
-  DOUBLE: 'double',
-  SUITE: 'suite',
-  DELUXE: 'deluxe',
+  SINGLE: "single",
+  DOUBLE: "double",
+  SUITE: "suite",
+  DELUXE: "deluxe",
 } as const;
 
 export type RoomType = (typeof ROOMTYPES)[keyof typeof ROOMTYPES];

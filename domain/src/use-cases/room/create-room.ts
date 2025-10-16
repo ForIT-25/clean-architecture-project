@@ -1,4 +1,4 @@
-import type { RoomType, Room } from '../../entities/room';
+import type { RoomType, Room } from "../../entities/room";
 
 interface CreateRoomInput {
   id: string;
@@ -10,7 +10,7 @@ interface CreateRoomInput {
 
 export function createRoom(input: CreateRoomInput): Room {
   if (input.price <= 0) {
-    throw new Error('Price must be positive');
+    throw new Error("Price must be positive");
   }
 
   return {
@@ -21,4 +21,4 @@ export function createRoom(input: CreateRoomInput): Room {
     price: input.price,
     isAvailable: true,
   };
-};
+}
