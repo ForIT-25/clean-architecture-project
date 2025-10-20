@@ -4,7 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest src/",
+    "test:hotel": "vitest src/use-cases/hotel",
+    "test:room": "vitest src/use-cases/room",
+    "test:user": "vitest src/use-cases/user",
+    "test:booking": "vitest src/use-cases/booking",
+    "lint": "eslint .",
+    "format": "prettier --write ."
   },
   "keywords": [],
   "author": "",
