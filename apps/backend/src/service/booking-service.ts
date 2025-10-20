@@ -50,8 +50,8 @@ export class BookingServiceImplementation implements BookingService {
     await prisma.booking.create({
       data: {
         id: booking.id,
-        userId: booking.idUser,
-        roomId: booking.idRoom,
+        userId: booking.userId,
+        roomId: booking.roomId,
         startDate: booking.startDate,
         endDate: booking.endDate,
         totalPrice: booking.totalPrice,
@@ -63,8 +63,8 @@ export class BookingServiceImplementation implements BookingService {
     await prisma.booking.update({
       where: { id: booking.id},
       data: {
-        userId: booking.idUser,
-        roomId: booking.idRoom,
+        userId: booking.userId,
+        roomId: booking.userId,
         startDate: booking.startDate,
         endDate: booking.endDate,
         totalPrice: booking.totalPrice,
