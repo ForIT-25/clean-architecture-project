@@ -20,7 +20,6 @@ model Hotel {
 
 model Room {
   id          String    @id @default(uuid())
-
   name        String
   type        String
   description String
@@ -37,6 +36,7 @@ model User {
   id          String    @id @default(uuid())
   name        String
   email       String    @unique
+  password    String
   role        String
   bookings    Booking[]
   createdAt   DateTime  @default(now())
@@ -47,6 +47,7 @@ model Booking {
   id          String    @id @default(uuid())
   startDate   DateTime
   endDate     DateTime
+  totalPrice  Float
   roomId      String
   userId      String
   room        Room      @relation(fields: [roomId], references: [id])
