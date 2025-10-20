@@ -1,10 +1,9 @@
 import { Entity } from "./entity";
 
 export interface Booking extends Entity {
-  buyDate: Date;
-  reserveDate: Date;
-  days: number;
-  idUser: string;
-  idRoom: string;
-  price: number;
+  startDate: Date;
+  endDate: Date;
+  userId: string;
+  roomId: string;
+  totalPrice: number;
 }

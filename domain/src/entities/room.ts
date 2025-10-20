@@ -15,4 +15,5 @@ export interface Room extends Entity {
   description: string;
   price: number;
   isAvailable: boolean;
+  hotelId: string;
 }
