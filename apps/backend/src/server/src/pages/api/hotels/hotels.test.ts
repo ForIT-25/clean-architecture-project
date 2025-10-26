@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { GET, POST } from "./route";
-import { Hotel } from "../../../../../../../../domain/src/entities/hotel";
+import { Hotel } from "@hotel-project/domain";
 
 const mocks = vi.hoisted(() => {
     const mockFindHotelAll = vi.fn<() => Promise<Hotel[]>>();

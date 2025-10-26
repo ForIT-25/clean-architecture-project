@@ -25,8 +25,8 @@ export class RoomServiceImplementation implements RoomService {
   }
 
   async findRoomByHotelId(hotelId: string): Promise<Room[]> {
-    const rooms: Room[] = await prisma.room.findUnique({
-      where: { id: hotelId },
+    const rooms: Room[] = await prisma.room.findMany({
+      where: { hotelId },
     });
     return rooms;
   }

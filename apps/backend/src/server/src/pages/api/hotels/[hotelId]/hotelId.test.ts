@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { GET, PUT, DELETE } from "./route"; 
-import { Hotel } from "../../../../../../../../../domain/src/entities/hotel";
+import { Hotel } from "@hotel-project/domain";
 
 const MOCK_HOTEL_ID = "hotel-123";
 

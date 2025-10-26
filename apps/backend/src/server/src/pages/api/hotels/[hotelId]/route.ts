@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { HotelServiceImplementation } from "../../../../../../service/hotel-service";
-import { Hotel } from "../../../../../../../../../domain/src/entities/hotel";
+import { HotelServiceImplementation } from "@hotel-project/backend";
+import { Hotel } from "@hotel-project/domain";
 
 const hotelService = new HotelServiceImplementation();
 
