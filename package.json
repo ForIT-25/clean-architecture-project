@@ -3,7 +3,14 @@
   "version": "1.0.0",
   "description": "Proyecto realizado para aplicar conceptos de arquitectura limpia en academy ForIT",
   "main": "index.js",
+  "private": true,
+  "workspaces":[
+    "domain",
+    "apps/backend/",
+    "apps/backend/src/server"
+  ],
   "scripts": {
+    "install": "npm install --workspaces",
     "test": "vitest",
     "test:domain": "vitest domain/src",
     "test:back": "vitest apps/backend/src",
