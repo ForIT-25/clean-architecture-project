@@ -7,3 +7,4 @@ export interface Booking extends Entity {
   roomId: string;
   totalPrice: number;
 }
+ 
