@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { HotelService } from '../../../../domain/src/services/hotel-service';
-import { Hotel } from "../../../../domain/src/entities/hotel";
+import { Hotel, HotelService, CreateHotelData } from "@hotel-project/domain";
 
 const prisma = new PrismaClient();
 
@@ -22,23 +21,25 @@ export class HotelServiceImplementation implements HotelService {
     return hotel ?? undefined;
   }
 
-  async saveHotel(hotel: Hotel): Promise<void> {
-    await prisma.hotel.create({
+  async registerHotel(params: CreateHotelData): Promise<Hotel> {
+    const newHotel:Hotel = await prisma.hotel.create({
       data: {
-        id: hotel.id,
-        name: hotel.name,
-        address: hotel.address,
-        description: hotel.description,
+        name: params.name,
+        address: params.address,
+        description: params.description,
       },
     });
+
+    return {
+      ...newHotel,
+      rooms: []
+    };
   }
 
   async updateHotel(hotelId: string, updates: Partial<Hotel>): Promise<void> {
     await prisma.hotel.update({
       where: { id: hotelId },
-      data: {
-        updates,
-      },
+      data: updates,
     });
   }
 

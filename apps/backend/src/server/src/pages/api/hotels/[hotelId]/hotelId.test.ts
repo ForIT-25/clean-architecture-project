@@ -31,7 +31,15 @@ vi.mock("../../../../../../service/hotel-service", () => {
 
 describe("API /api/hotels/[hotelId]", () => {
     const { mockFindHotelById, mockUpdateHotel, mockDeleteHotel } = mocks;
-    const hotelData: Hotel = { id: MOCK_HOTEL_ID, name: "Test Hotel", address: "123 Main St", description: "Nice place", rooms: [] };
+    const hotelData: Hotel = {
+      id: MOCK_HOTEL_ID,
+      name: "Test Hotel",
+      address: "123 Main St",
+      description: "Nice place",
+      rooms: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
     
     const mockParams = { params: { hotelId: MOCK_HOTEL_ID } };
 

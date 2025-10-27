@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { HotelServiceImplementation } from "@hotel-project/backend";
-import { Hotel } from "@hotel-project/domain";
+import { CreateHotelData, Hotel } from "@hotel-project/domain";
 
 const hotelService = new HotelServiceImplementation();
 
@@ -19,24 +19,21 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const requiredFields = ["id", "name", "address", "description"];
+    const requiredFields = ["name", "address", "description"];
     
     for (const field of requiredFields) {
       if (!data[field]) {
         throw new Error(`Missind required field: ${field}`);
       }
     }
-    const rooms = data.rooms || [];
     
-    const newHotel: Hotel = {
-      id: data.id,
+    const createHotelData: CreateHotelData = {
       name: data.name,
       address: data.address,
       description: data.description,
-      rooms
     };
 
-    await hotelService.saveHotel(newHotel);
+    const newHotel = await hotelService.registerHotel(createHotelData);
 
     return NextResponse.json(
       { message: "Created hotel successfully", hotel: newHotel },

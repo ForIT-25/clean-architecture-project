@@ -1,22 +1,17 @@
-import { Hotel } from "../../entities/hotel";
+import { Hotel, HotelService } from "@hotel-project/domain";
 
-export interface CreateHotelParams {
-  id: string;
-  name: string;
-  address: string;
-  description: string;
+export interface CreateHotelDependencies {
+  hotelService: HotelService;
 }
 
-export function createHotel(params: CreateHotelParams): Hotel {
+export type CreateHotelData = Omit<Hotel, 'id' | 'createdAt' | 'updatedAt' | 'rooms'>;
+
+export async function createHotel(params: CreateHotelData,
+  { hotelService }: CreateHotelDependencies): Promise<Hotel> {
   if (!params.name || params.name.trim() === "") {
     throw new Error("Hotel name cannot be empty");
   }
-
-  return {
-    id: params.id,
-    name: params.name,
-    address: params.address,
-    description: params.description,
-    rooms: [],
-  };
+  const newHotel:Hotel = await hotelService.registerHotel(params);
+  
+  return newHotel;
 }

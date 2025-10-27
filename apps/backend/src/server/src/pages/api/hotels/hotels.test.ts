@@ -26,6 +26,8 @@ const mockHotel:Hotel = {
   address: "New Street",
   description: "New Description",
   rooms: [],
+  createdAt: new Date(),
+  updatedAt: new Date(),
 };
 
 describe("API /api/hotels (Next.js Route Handler)", () => {
