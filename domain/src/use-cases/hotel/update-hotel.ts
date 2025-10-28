@@ -1,12 +1,26 @@
-import { Hotel } from "../../entities/hotel";
+import { Hotel, HotelService } from "@hotel-project/domain";
 
-export type UpdateHotelParams = Partial<
-  Pick<Hotel, "name" | "address" | "description">
->;
+export interface UpdateHotelDependencies {
+  hotelService: HotelService;
+}
 
-export function updateHotel(hotel: Hotel, updates: UpdateHotelParams): Hotel {
-  return {
-    ...hotel,
-    ...updates,
-  };
+export type UpdateHotelParams = Partial<Hotel>;
+
+export async function updateHotel(
+  hotelId: string, 
+  updates: UpdateHotelParams,
+  { hotelService }: UpdateHotelDependencies
+): Promise<Hotel | undefined> {
+  
+  if (!hotelId || Object.keys(updates).length === 0) {
+    throw new Error("Invalid update request: ID or data missing");
+  }
+
+  const updatedHotel = await hotelService.updateHotel(hotelId, updates);
+
+  if (!updatedHotel) {
+    throw new Error(`Hotel with ID ${hotelId} not found`);
+  }
+
+  return updatedHotel;
 }

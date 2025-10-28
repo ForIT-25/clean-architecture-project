@@ -39,12 +39,12 @@ export async function PUT(
       return NextResponse.json({ error: "Missing Update data." }, { status: 400 });
     }
 
-    await hotelService.updateHotel(hotelId, data);
+    const hotel: Hotel | undefined =await hotelService.updateHotel(hotelId, data);
 
-    return NextResponse.json(
-      { message: `Hotel ${hotelId} updated successfully` },
-      { status: 200 }
-    );
+    if (!hotel) {
+      return NextResponse.json({ error: "Hotel Not found" }, { status: 404 });
+    }
+    return NextResponse.json(hotel, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { error: (error as Error).message },

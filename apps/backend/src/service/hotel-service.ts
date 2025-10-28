@@ -36,11 +36,16 @@ export class HotelServiceImplementation implements HotelService {
     };
   }
 
-  async updateHotel(hotelId: string, updates: Partial<Hotel>): Promise<void> {
-    await prisma.hotel.update({
+  async updateHotel(
+    hotelId: string,
+    updates: Partial<Hotel>
+  ): Promise<Hotel | undefined> {
+    const updatedHotel = await prisma.hotel.update({
       where: { id: hotelId },
       data: updates,
     });
+
+    return updatedHotel;
   }
 
   async deleteHotel(hotelId: string): Promise<void> {

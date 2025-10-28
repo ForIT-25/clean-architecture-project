@@ -4,6 +4,6 @@ export interface HotelService {
   findHotelAll(): Promise<Hotel[]>;
   findHotelById(hotelId:string): Promise<Hotel | undefined>;
   registerHotel(params: CreateHotelData): Promise<Hotel>;
-  updateHotel(hotelId: string, updates: Partial<Hotel>): Promise<void>;
+  updateHotel(hotelId: string, updates: Partial<Hotel>): Promise<Hotel | undefined>;
   deleteHotel(hotelId: string): Promise<void>;
 }
