@@ -25,11 +25,15 @@ export const createMockHotelService = () => {
     ...params,
   }));
   
+  const deleteHotelMock = vi.fn(async (id: string) => {
+    return Promise.resolve(); 
+  });
+
   return {
     registerHotel: registerHotelMock,
     findHotelAll: vi.fn(),
     findHotelById: vi.fn(),
     updateHotel: vi.fn(),
-    deleteHotel: vi.fn(),
+    deleteHotel: deleteHotelMock,
   };
 };
