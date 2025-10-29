@@ -14,7 +14,6 @@ export const MOCK_HOTEL_DATA: Hotel = {
   name: "Mocked Hotel Name",
   address: "123 Mock Street",
   description: "A description from the mock",
-  rooms: [], 
   createdAt: new Date(),
   updatedAt: new Date(),
 };

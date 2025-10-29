@@ -30,10 +30,7 @@ export class HotelServiceImplementation implements HotelService {
       },
     });
 
-    return {
-      ...newHotel,
-      rooms: []
-    };
+    return newHotel;
   }
 
   async updateHotel(

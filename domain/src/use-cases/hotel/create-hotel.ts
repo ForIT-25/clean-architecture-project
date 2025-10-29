@@ -4,7 +4,7 @@ export interface CreateHotelDependencies {
   hotelService: HotelService;
 }
 
-export type CreateHotelData = Omit<Hotel, 'id' | 'createdAt' | 'updatedAt' | 'rooms'>;
+export type CreateHotelData = Omit<Hotel, 'id' | 'createdAt' | 'updatedAt'>;
 
 export async function createHotel(params: CreateHotelData,
   { hotelService }: CreateHotelDependencies): Promise<Hotel> {

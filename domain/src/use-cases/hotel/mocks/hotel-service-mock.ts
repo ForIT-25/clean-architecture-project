@@ -6,7 +6,6 @@ export const MockHotel:Hotel = {
   name: 'Mock name',
   address: 'Mock address 123',
   description: 'Mock description',
-  rooms: [],
   createdAt: new Date(),
   updatedAt: new Date(),
 };

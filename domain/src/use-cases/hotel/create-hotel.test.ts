@@ -30,7 +30,6 @@ describe("Create Hotel", () => {
     hotelServiceMock.registerHotel.mockResolvedValueOnce(expectedHotel);
     const hotel: Hotel = await createHotel(hotelData, mockDependencies);
 
-    expect(hotel.rooms).toEqual([]);
     expect(hotel.name).toBe("Gran Hotel");
     expect(hotel).toEqual(expectedHotel);
     expect(hotelServiceMock.registerHotel).toHaveBeenCalledTimes(1);
