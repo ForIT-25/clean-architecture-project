@@ -1,12 +1,17 @@
 import { NextResponse } from "next/server";
 import { HotelServiceImplementation } from "@hotel-project/backend";
-import { CreateHotelData, Hotel } from "@hotel-project/domain";
+import { CreateHotelData, Hotel, HotelService } from "@hotel-project/domain";
 
-const hotelService = new HotelServiceImplementation();
+const getHotelService = (): HotelService => {
+  return new HotelServiceImplementation(); 
+};
 
-export async function GET() {
+export async function GET(
+  request: Request,
+    service: HotelService = getHotelService()
+) {
   try {
-    const hotels: Hotel[] = await hotelService.findHotelAll();
+    const hotels: Hotel[] = await service.findHotelAll();
     return NextResponse.json(hotels, { status: 200 });
   } catch (error) {
     return NextResponse.json(
@@ -16,14 +21,20 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(
+  request: Request,
+  service: HotelService = getHotelService()
+) {
   try {
     const data = await request.json();
     const requiredFields = ["name", "address", "description"];
     
     for (const field of requiredFields) {
       if (!data[field]) {
-        throw new Error(`Missind required field: ${field}`);
+        return NextResponse.json(
+          { error: `Missing required field: ${field}` }, 
+          { status: 400 } 
+        );
       }
     }
     
@@ -33,7 +44,7 @@ export async function POST(request: Request) {
       description: data.description,
     };
 
-    const newHotel = await hotelService.registerHotel(createHotelData);
+    const newHotel = await service.registerHotel(createHotelData);
 
     return NextResponse.json(
       { message: "Created hotel successfully", hotel: newHotel },

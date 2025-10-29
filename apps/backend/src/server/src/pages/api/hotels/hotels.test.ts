@@ -1,80 +1,71 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { GET, POST } from "./route";
 import { Hotel } from "@hotel-project/domain";
+import { MOCK_HOTEL_DATA, createMockHotelServiceAPI } from "../../../mocks/hotel-service-api-mock"
 
-const mocks = vi.hoisted(() => {
-    const mockFindHotelAll = vi.fn<() => Promise<Hotel[]>>();
-    const mockSaveHotel = vi.fn<(hotel: Hotel) => Promise<void>>();
-    return {
-        mockFindHotelAll,
-        mockSaveHotel,
-    };
-});
-
-vi.mock("../../../../../service/hotel-service", () => {
+vi.mock('@prisma/client', () => {
   return {
-    HotelServiceImplementation: vi.fn(() => ({
-      findHotelAll: mocks.mockFindHotelAll,
-      saveHotel: mocks.mockSaveHotel,
+    PrismaClient: vi.fn(() => ({
     })),
   };
 });
 
-const mockHotel:Hotel = {
-  id: "H1",
-  name: "New Hotel",
-  address: "New Street",
-  description: "New Description",
-  rooms: [],
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
+let mockedService: ReturnType<typeof createMockHotelServiceAPI>;
+
+const mockHotel:Hotel = MOCK_HOTEL_DATA;
 
 describe("API /api/hotels (Next.js Route Handler)", () => {
   beforeEach(() => {
-    mocks.mockFindHotelAll.mockClear();
-    mocks.mockSaveHotel.mockClear();
+    mockedService = createMockHotelServiceAPI();
     vi.clearAllMocks(); 
   });
 
   test("GET must return all hotels with status 200", async () => {
     const mockHotels: Hotel[] = [mockHotel];
 
-    mocks.mockFindHotelAll.mockResolvedValue(mockHotels);
+    mockedService.findHotelAll.mockResolvedValue(mockHotels);
 
-    const response = await GET();
+    const response = await GET(new Request('http://localhost'), mockedService);
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data).toEqual(mockHotels);
-    expect(mocks.mockFindHotelAll).toHaveBeenCalledOnce();
+    expect(data).toEqual(JSON.parse(JSON.stringify(mockHotels)));
+    expect(mockedService.findHotelAll).toHaveBeenCalledOnce();
   });
 
 
   test("POST must create a new hotel and return status 201", async () => {
+    const requestBody = { 
+      name: mockHotel.name,
+      address: mockHotel.address,
+      description: mockHotel.description
+    };
     const request = new Request("http://localhost/api/hotels", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(mockHotel),
+      body: JSON.stringify(requestBody),
     });
 
-    mocks.mockSaveHotel.mockResolvedValue(undefined);
+    mockedService.registerHotel.mockResolvedValue(mockHotel);
 
-    const response = await POST(request);
+    const response = await POST(request, mockedService);
     const data = await response.json();
     
     expect(response.status).toBe(201);
     expect(data.message).toBe("Created hotel successfully");
-    expect(data.hotel.name).toBe(mockHotel.name); 
+    expect(data.hotel.name).toBe(mockHotel.name);
+    expect(mockedService.registerHotel).toHaveBeenCalledWith(
+      expect.objectContaining(requestBody)
+    );
   });
   
   
   test("GET should return status 500 in case of service error", async () => {
     const error = new Error("Database connection failed");
     
-    mocks.mockFindHotelAll.mockRejectedValue(error);
+    mockedService.findHotelAll.mockRejectedValue(error);
 
-    const response = await GET();
+    const response = await GET(new Request('http://localhost'), mockedService);
     const data = await response.json();
 
     expect(response.status).toBe(500);
