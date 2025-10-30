@@ -1,11 +1,12 @@
-import { User } from "../../entities/user";
+import { User, UserRole } from "@hotel-project/domain";
 
-interface updateUserInput {
+export interface updateUserData {
   name?: string;
   email?: string;
+  role?: UserRole;
 }
 
-export function updateUser(user: User, updates: updateUserInput): User {
+export function updateUser(user: User, updates: updateUserData): User {
   return {
     ...user,
     ...updates,
