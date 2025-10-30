@@ -1,21 +1,48 @@
-import { describe, test, expect } from "vitest";
-import { createUser } from "./create-user";
-import { User } from "../../entities/user";
-import { updateUser } from "./update-user";
+import { describe, test, expect, vi, beforeEach } from "vitest";
+import { User, ROLES, updateUser, UpdateUserData } from "@hotel-project/domain";
+import { MockedUserService, createMockUserService, MockUser } from "./mocks/user-service-mock"; 
 
-describe("Update user", () => {
-  test("Update user with its properties", () => {
-    const user: User = createUser("1", "Andres", "andy@gmail.com", "12345678");
-    const updatedUser: User = updateUser(user, {
-      name: "Ivan",
-      email: "ivan@gmail.com",
-    });
+let mockService: MockedUserService;
+let userId: string;
 
-    expect(updatedUser).toEqual({
-      id: "1",
-      name: "Ivan",
-      email: "ivan@gmail.com",
-      password: "12345678",
-    });
+describe("Update User Use Case", () => {
+  beforeEach(() => {
+    mockService = createMockUserService();
+    vi.clearAllMocks();
+    userId = "1";
   });
+
+  test("Should return the updated user", async () => {
+    const updates: UpdateUserData = { name: "Ivan Refactor", role: ROLES.MANAGER };
+    
+    const mockUpdatedUser: User = { 
+        ...MockUser, 
+        id: userId, 
+        name: updates.name!, 
+        role: updates.role!,
+        updatedAt: new Date()
+    };
+    
+    mockService.updateUser.mockResolvedValue(mockUpdatedUser); 
+    
+    const result = await updateUser(mockService, userId, updates);
+
+    expect(result.id).toBe(userId);
+    expect(result.name).toBe("Ivan Refactor");
+    expect(result.role).toBe(ROLES.MANAGER);
+    expect(mockService.updateUser).toHaveBeenCalledWith(userId, updates);
+  });
+
+  test("Throw error if service returns undefined", async () => {
+    const updates: UpdateUserData = { name: "Test" };
+    const fakeId = "id-falso";
+    
+    mockService.updateUser.mockResolvedValue(undefined); 
+
+    await expect(updateUser(mockService, fakeId, updates)).rejects.toThrow(
+      "User not found or failed service"
+    );
+
+    expect(mockService.updateUser).toHaveBeenCalledWith(fakeId, updates);
+  }); 
 });

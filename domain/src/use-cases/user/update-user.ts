@@ -1,14 +1,21 @@
-import { User, UserRole } from "@hotel-project/domain";
+import { User, UserRole, UserService } from "@hotel-project/domain";
 
-export interface updateUserData {
+export interface UpdateUserData {
   name?: string;
-  email?: string;
-  role?: UserRole;
+  role?: UserRole; 
 }
 
-export function updateUser(user: User, updates: updateUserData): User {
-  return {
-    ...user,
-    ...updates,
-  };
+export async function updateUser(
+  service: UserService,
+  userId: string,
+  updates: UpdateUserData
+): Promise<User> {
+  
+  const updatedUser = await service.updateUser(userId, updates);
+
+  if (!updatedUser) {
+    throw new Error("User not found or failed service");
+  }
+
+  return updatedUser;
 }
