@@ -7,4 +7,9 @@ export interface Booking extends Entity {
   roomId: string;
   totalPrice: number;
 }
- 
+
+export type BookingCreateData = Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>;
+
+export type BookingUpdateData = Partial<
+  Omit<Booking, 'id' | 'userId' | 'roomId' | 'createdAt' | 'updatedAt'>
+>;

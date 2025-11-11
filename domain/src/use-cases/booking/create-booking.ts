@@ -1,21 +1,19 @@
-interface CreateBookingInput {
-  id: string;
-  buyDate: Date;
-  reserveDate: Date;
-  days: number;
-  idUser: string;
-  idRoom: string;
-  price: number;
-}
+import { Booking, BookingService } from "@hotel-project/domain";
+import { BookingCreateData } from "@hotel-project/domain";
 
-export function createBooking(input: CreateBookingInput) {
-  return {
-    id: input.id,
-    buyDate: input.buyDate,
-    reserveDate: input.reserveDate,
-    days: input.days,
-    idUser: input.idUser,
-    idRoom: input.idRoom,
-    price: input.price,
-  };
+export async function createBooking(
+  service: BookingService,
+  data: BookingCreateData
+): Promise<Booking> {
+  if (data.totalPrice <= 0) {
+    throw new Error("Total price must be positive.");
+  }
+  
+  if (data.startDate >= data.endDate) {
+    throw new Error("Start date must be before end date.");
+  }
+
+  const newBooking = await service.createBooking(data);
+
+  return newBooking;
 }

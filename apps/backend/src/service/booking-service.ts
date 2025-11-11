@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { BookingService } from '../../../../domain/src/services/booking-service';
-import { Booking } from "../../../../domain/src/entities/booking";
+import { Booking, BookingCreateData, BookingService, BookingUpdateData } from '@hotel-project/domain';
 
 const prisma = new PrismaClient();
 
@@ -46,30 +45,23 @@ export class BookingServiceImplementation implements BookingService {
     return bookings;
   }
 
-  async saveBooking(booking: Booking): Promise<void> {
-    await prisma.booking.create({
-      data: {
-        id: booking.id,
-        userId: booking.userId,
-        roomId: booking.roomId,
-        startDate: booking.startDate,
-        endDate: booking.endDate,
-        totalPrice: booking.totalPrice,
-      },
+  async createBooking(data: BookingCreateData): Promise<Booking> {
+    const booking: Booking = await prisma.booking.create({
+      data: data,
     });
+
+    return booking;
   }
 
-  async updateBooking(booking: Booking): Promise<void> {
-    await prisma.booking.update({
-      where: { id: booking.id},
-      data: {
-        userId: booking.userId,
-        roomId: booking.userId,
-        startDate: booking.startDate,
-        endDate: booking.endDate,
-        totalPrice: booking.totalPrice,
-      },
+  async updateBooking(
+    bookingId: string,
+    updates: BookingUpdateData): Promise<Booking | undefined> {
+    const booking: Booking = await prisma.booking.update({
+      where: { id: bookingId},
+      data: updates,
     });
+
+    return booking;
   }
 
   async deleteBooking(bookingId: string): Promise<void> {

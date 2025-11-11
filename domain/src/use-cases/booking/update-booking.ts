@@ -1,17 +1,19 @@
-import { Booking } from "../../entities/booking";
+import { Booking, BookingService, BookingUpdateData } from "@hotel-project/domain";
 
-interface UpdateBookingInput {
-  reserveDate?: Date;
-  days?: number;
-  price?: number;
-}
+export async function updateBooking(
+  service: BookingService,
+  bookingId: string,
+  updates: BookingUpdateData
+): Promise<Booking | undefined> {
+  if (updates.totalPrice !== undefined && updates.totalPrice <= 0) {
+    throw new Error("Total price must be positive on update.");
+  }
 
-export function updateBooking(
-  booking: Booking,
-  updates: UpdateBookingInput,
-): Booking {
-  return {
-    ...booking,
-    ...updates,
-  };
+  if (updates.startDate && updates.endDate && updates.startDate >= updates.endDate) {
+    throw new Error("Start date must be before end date on update.");
+  }
+
+  const updatedBooking = await service.updateBooking(bookingId, updates);
+
+  return updatedBooking;
 }
