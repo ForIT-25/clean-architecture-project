@@ -23,11 +23,7 @@ export class HotelServiceImplementation implements HotelService {
 
   async registerHotel(params: CreateHotelData): Promise<Hotel> {
     const newHotel:Hotel = await prisma.hotel.create({
-      data: {
-        name: params.name,
-        address: params.address,
-        description: params.description,
-      },
+      data: params,
     });
 
     return newHotel;
