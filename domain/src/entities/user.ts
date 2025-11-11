@@ -14,3 +14,9 @@ export interface User extends Entity{
   password: string;
   role: UserRole;
 }
+
+export type CreateUserData = Omit<User, 'id' | 'role' | 'createdAt' | 'updatedAt'>;
+
+export type UpdateUserData = Partial<
+  Pick<User, 'name' | 'role' >
+>;

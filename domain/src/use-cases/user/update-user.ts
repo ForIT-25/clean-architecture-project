@@ -1,9 +1,4 @@
-import { User, UserRole, UserService } from "@hotel-project/domain";
-
-export interface UpdateUserData {
-  name?: string;
-  role?: UserRole; 
-}
+import { UpdateUserData, User, UserRole, UserService } from "@hotel-project/domain";
 
 export async function updateUser(
   service: UserService,

@@ -1,11 +1,4 @@
-import { User, UserRole, UserService } from "@hotel-project/domain";
-
-export interface CreateUserData {
-  name: string;
-  email: string;
-  password: string;
-  role?: UserRole;
-}
+import { CreateUserData, User, UserRole, UserService } from "@hotel-project/domain";
 
 export async function createUser(
   data: CreateUserData,
@@ -16,7 +9,7 @@ export async function createUser(
     throw new Error("Email already in use");
   }
 
-  const user = await service.saveUser(data);
+  const user = await service.createUser(data);
 
   return user;
 }

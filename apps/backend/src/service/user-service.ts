@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { UserService } from '../../../../domain/src/services/user-service';
-import { User } from "../../../../domain/src/entities/user";
+import { CreateUserData, ROLES, UpdateUserData, User, UserService } from '@hotel-project/domain';
 
 const prisma = new PrismaClient();
 
@@ -34,28 +33,26 @@ export class UserServiceImplementation implements UserService{
     return user ?? undefined;
   }
 
-  async saveUser(user: User): Promise<void> {
-    await prisma.user.create({
+  async createUser(data: CreateUserData): Promise<User> {
+    const user: User = await prisma.user.create({
       data: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        password: user.password,
-        role: user.role,
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        role: ROLES.GUEST,
       },
     });
+
+    return user;
   }
 
-  async updateUser(user: User): Promise<void> {
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        name: user.name,
-        email: user.email,
-        password: user.password,
-        role: user.role,
-      },
+  async updateUser(userId: string, updates: UpdateUserData): Promise<User | undefined> {
+    const user: User = await prisma.user.update({
+      where: { id: userId },
+      data: updates,
     });
+
+    return user;
   }
 
   async deleteUser(userId: string): Promise<void> {
