@@ -17,3 +17,9 @@ export interface Room extends Entity {
   isAvailable: boolean;
   hotelId: string;
 }
+
+export type CreateRoomData = Omit<Room, 'id' | 'createdAt' | 'updatedAt'>;
+
+export type UpdateRoomData = Partial<
+  Omit<Room, 'id' | 'hotelId' | 'createdAt' | 'updatedAt'>
+>;

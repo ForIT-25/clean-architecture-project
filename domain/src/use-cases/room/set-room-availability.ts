@@ -1,15 +1,9 @@
-import { Room } from "../../entities/room";
+import { Room, RoomService } from "@hotel-project/domain";
 
-export function setRoomAvailable(room: Room): Room {
-  return {
-    ...room,
-    isAvailable: true,
-  };
-}
-
-export function setRoomUnavailable(room: Room): Room {
-  return {
-    ...room,
-    isAvailable: false,
-  };
+export async function setRoomAvailability(
+  service: RoomService,
+  status: boolean,
+  roomId: string): Promise<Room | undefined> {
+    const updatedRoom = await service.updateRoom(roomId, {isAvailable: status});
+    return updatedRoom;
 }

@@ -1,10 +1,10 @@
-import { Room } from "../entities/room";
+import { CreateRoomData, Room, UpdateRoomData } from "../entities/room";
 
 export interface RoomService {
   findRoomAll(): Promise<Room[]>;
   findRoomById(roomId: string): Promise<Room | undefined>;
   findRoomByHotelId(hotelId:string): Promise<Room[]>;
-  saveRoom(room: Room): Promise<void>;
-  updateRoom(room: Room): Promise<void>;
+  createRoom(data: CreateRoomData): Promise<Room>;
+  updateRoom(roomId: string, updates: UpdateRoomData): Promise<Room | undefined>;
   deleteRoom(roomId: string): Promise<void>;
 }

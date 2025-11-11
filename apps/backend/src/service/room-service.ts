@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { RoomService } from '../../../../domain/src/services/room-service';
-import { Room } from "../../../../domain/src/entities/room";
+import { CreateRoomData, Room, RoomService, UpdateRoomData } from '@hotel-project/domain';
 
 const prisma = new PrismaClient();
 
@@ -31,32 +30,21 @@ export class RoomServiceImplementation implements RoomService {
     return rooms;
   }
 
-  async saveRoom(room: Room): Promise<void> {
-    await prisma.room.create({
-      data: {
-        id: room.id,
-        name: room.name,
-        type: room.type,
-        price: room.price,
-        description: room.description,
-        isAvailable: room.isAvailable,
-        hotelId: room.hotelId,
-      },
+  async createRoom(data: CreateRoomData): Promise<Room> {
+    const room: Room = await prisma.room.create({
+      data: data,
     });
+
+    return room;
   }
 
-  async updateRoom(room: Room): Promise<void> {
-    await prisma.room.update({
-      where: { id: room.id },
-      data: {
-        name: room.name,
-        type: room.type,
-        price: room.price,
-        description: room.description,
-        isAvailable: room.isAvailable,
-        hotelId: room.hotelId,
-      },
+  async updateRoom(roomId: string, updates: UpdateRoomData): Promise<Room | undefined> {
+    const room: Room = await prisma.room.update({
+      where: { id: roomId },
+      data: updates,
     });
+
+    return room;
   }
 
   async deleteRoom(roomId: string): Promise<void> {

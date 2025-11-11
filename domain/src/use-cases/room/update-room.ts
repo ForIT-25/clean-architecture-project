@@ -1,15 +1,13 @@
-import { RoomType, Room } from "../../entities/room";
+import { Room, UpdateRoomData, RoomService } from "@hotel-project/domain";
 
-interface UpdateRoomInput {
-  name?: string;
-  type?: RoomType;
-  description: string;
-  price?: number;
-}
-
-export function updateRoom(room: Room, updates: UpdateRoomInput): Room {
-  return {
-    ...room,
-    ...updates,
-  };
+export async function updateRoom(
+  service: RoomService,
+  roomId: string, 
+  updates: UpdateRoomData): Promise<Room | undefined> {
+    if (updates.price !== undefined && updates.price <= 0) {
+      throw new Error("Room price must be positive on update.");
+    }
+    const updatedRoom = await service.updateRoom(roomId, updates);
+    
+    return updatedRoom;
 }

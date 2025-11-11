@@ -1,29 +1,39 @@
-import { describe, test, expect } from "vitest";
-import { Room } from "../../entities/room";
-import { createRoom } from "./create-room";
-import { setRoomAvailable, setRoomUnavailable } from "./set-room-availability";
+import { describe, test, expect, beforeEach } from 'vitest';
+import { setRoomAvailability } from './set-room-availability';
+import { createMockRoomService, MockedRoomService, MockRoom } from './mocks/room-service.mock';
 
-describe("room availability", () => {
-  const originalRoom: Room = createRoom({
-    id: "r1",
-    name: "room 1",
-    type: "double",
-    description: "todas las comodidades",
-    price: 120,
+describe('setRoomAvailability', () => {
+  let mockService: MockedRoomService;
+  const roomId = MockRoom.id;
+
+  beforeEach(() => {
+    mockService = createMockRoomService();
+    mockService.updateRoom.mockClear(); 
   });
 
-  test("set room unavailable", () => {
-    const updatedRoom: Room = setRoomUnavailable(originalRoom);
+  test('Set isAvailable to true', async () => {
+    const expectedRoom = { ...MockRoom, isAvailable: true };
+    mockService.updateRoom.mockResolvedValue(expectedRoom);
 
-    expect(updatedRoom.isAvailable).toBe(false);
-    expect(updatedRoom.isAvailable).not.toBe(originalRoom.isAvailable);
+    const result = await setRoomAvailability(mockService, true, roomId);
+
+    expect(mockService.updateRoom).toHaveBeenCalledWith(roomId, {
+      isAvailable: true,
+    });
+    expect(result?.isAvailable).toBe(true);
+    expect(result).toEqual(expectedRoom);
   });
 
-  test("set room available again", () => {
-    const unavailable: Room = { ...originalRoom, isAvailable: false };
-    const updatedRoom: Room = setRoomAvailable(unavailable);
+  test('Set isAvailable to false', async () => {
+    const expectedRoom = { ...MockRoom, isAvailable: false };
+    mockService.updateRoom.mockResolvedValue(expectedRoom);
 
-    expect(updatedRoom.isAvailable).toBe(true);
-    expect(updatedRoom.isAvailable).not.toBe(unavailable.isAvailable);
+    const result = await setRoomAvailability(mockService, false, roomId);
+
+    expect(mockService.updateRoom).toHaveBeenCalledWith(roomId, {
+      isAvailable: false,
+    });
+    expect(result?.isAvailable).toBe(false);
+    expect(result).toEqual(expectedRoom);
   });
 });

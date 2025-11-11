@@ -1,30 +1,46 @@
-import { describe, test, expect } from "vitest";
-import { ROOMTYPES, Room } from "../../entities/room";
-import { createRoom } from "./create-room";
-import { updateRoom } from "./update-room";
+import { describe, test, expect, beforeEach } from 'vitest';
+import { UpdateRoomData, updateRoom } from '@hotel-project/domain';
+import { createMockRoomService, MockedRoomService, MockRoom } from './mocks/room-service.mock';
 
-describe("updateRoom", () => {
-  test("update room properties", () => {
-    const originalRoom: Room = createRoom({
-      id: "r1",
-      name: "room 1",
-      type: "double",
-      description: "todas las comodidades",
-      price: 120,
-    });
+describe('updateRoom', () => {
+  let mockService: MockedRoomService;
+  const roomId = MockRoom.id;
 
-    const updatedRoom: Room = updateRoom(originalRoom, {
-      name: "room 101",
-      type: ROOMTYPES.SUITE,
-      description: "Baño en suite",
-      price: 150,
-    });
+  beforeEach(() => {
+    mockService = createMockRoomService();
+  });
 
-    expect(updatedRoom.id).toBe(originalRoom.id);
-    expect(updatedRoom.name).toBe("room 101");
-    expect(updatedRoom.type).toBe(ROOMTYPES.SUITE);
-    expect(updatedRoom.description).toBe("Baño en suite");
-    expect(updatedRoom.price).toBe(150);
-    expect(updatedRoom.isAvailable).toBe(originalRoom.isAvailable);
+  test('Update the data and return the new room', async () => {
+    const updates: UpdateRoomData = { name: 'New Room Name', description: 'Updated desc' };
+    const expectedRoom = { ...MockRoom, ...updates, updatedAt: new Date() };
+
+    mockService.updateRoom.mockResolvedValue(expectedRoom);
+
+    const result = await updateRoom(mockService, roomId, updates);
+
+    expect(mockService.updateRoom).toHaveBeenCalledWith(roomId, updates);
+    expect(result?.name).toBe('New Room Name');
+    expect(result).toEqual(expectedRoom);
+  });
+
+  test('Throw an error if the price is zero or negative', async () => {
+    const updates: UpdateRoomData = { price: -5 };
+
+    await expect(updateRoom(mockService, roomId, updates)).rejects.toThrow(
+      'Room price must be positive on update.'
+    );
+
+    expect(mockService.updateRoom).not.toHaveBeenCalled();
+  });
+
+  test('Allows update if price is not defined', async () => {
+    const updates: UpdateRoomData = { name: 'Update only name' };
+    const expectedRoom = { ...MockRoom, ...updates };
+
+    mockService.updateRoom.mockResolvedValue(expectedRoom);
+
+    await updateRoom(mockService, roomId, updates);
+
+    expect(mockService.updateRoom).toHaveBeenCalledWith(roomId, updates);
   });
 });
