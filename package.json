@@ -4,7 +4,7 @@
   "description": "Proyecto realizado para aplicar conceptos de arquitectura limpia en academy ForIT",
   "main": "index.js",
   "private": true,
-  "workspaces":[
+  "workspaces": [
     "domain",
     "apps/backend/",
     "apps/backend/src/server"
@@ -34,6 +34,7 @@
     "@eslint/markdown": "^7.4.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
+    "@types/jsonwebtoken": "^9.0.10",
     "@typescript-eslint/eslint-plugin": "^8.46.0",
     "@typescript-eslint/parser": "^8.46.0",
     "@vitest/coverage-v8": "^3.2.4",
@@ -46,5 +47,9 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.0",
     "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "jsonwebtoken": "^9.0.2"
   }
 }
