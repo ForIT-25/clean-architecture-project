@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { HotelServiceImplementation } from "@hotel-project/backend";
-import { CreateHotelData, Hotel, HotelService } from "@hotel-project/domain";
+import { Hotel, HotelService, createHotel, CreateHotelData, findHotelAll } from "@hotel-project/domain";
 
 const getHotelService = (): HotelService => {
   return new HotelServiceImplementation(); 
@@ -8,10 +8,11 @@ const getHotelService = (): HotelService => {
 
 export async function GET(
   request: Request,
-    service: HotelService = getHotelService()
+  service: HotelService = getHotelService()
 ) {
   try {
-    const hotels: Hotel[] = await service.findHotelAll();
+    const hotels: Hotel[] = await findHotelAll({ hotelService: service });
+    
     return NextResponse.json(hotels, { status: 200 });
   } catch (error) {
     return NextResponse.json(
@@ -44,7 +45,9 @@ export async function POST(
       description: data.description,
     };
 
-    const newHotel = await service.registerHotel(createHotelData);
+    const newHotel = await createHotel(createHotelData, { 
+      hotelService: service 
+    });
 
     return NextResponse.json(
       { message: "Created hotel successfully", hotel: newHotel },

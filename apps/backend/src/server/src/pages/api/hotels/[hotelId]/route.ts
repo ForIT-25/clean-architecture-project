@@ -1,17 +1,20 @@
 import { NextResponse } from "next/server";
 import { HotelServiceImplementation } from "@hotel-project/backend";
-import { Hotel } from "@hotel-project/domain";
+import { Hotel, HotelService, findHotelById, deleteHotel, updateHotel, UpdateHotelParams } from "@hotel-project/domain";
 
-const hotelService = new HotelServiceImplementation();
+const getHotelService = (): HotelService => {
+  return new HotelServiceImplementation(); 
+};
 
 export async function GET(
     request: Request, 
-    { params }: { params: { hotelId: string } }
+    { params }: { params: { hotelId: string } },
+    service: HotelService = getHotelService() 
 ) {
   const { hotelId } = params;
 
   try {
-    const hotel: Hotel | undefined = await hotelService.findHotelById(hotelId);
+    const hotel: Hotel | undefined = await findHotelById(hotelId, { hotelService: service });
 
     if (!hotel) {
       return NextResponse.json({ error: "Hotel Not found" }, { status: 404 });
@@ -19,6 +22,12 @@ export async function GET(
 
     return NextResponse.json(hotel, { status: 200 });
   } catch (error) {
+    if ((error as Error).message.includes("required")) {
+        return NextResponse.json(
+            { error: (error as Error).message },
+            { status: 400 }
+        );
+    }
     return NextResponse.json(
       { error: (error as Error).message },
       { status: 500 }
@@ -28,44 +37,61 @@ export async function GET(
 
 export async function PUT(
     request: Request, 
-    { params }: { params: { hotelId: string } }
+    { params }: { params: { hotelId: string } },
+    service: HotelService = getHotelService()
 ) {
   const { hotelId } = params;
 
   try {
     const data = await request.json();
 
-    if (!hotelId || Object.keys(data).length === 0) {
+    if (Object.keys(data).length === 0) {
       return NextResponse.json({ error: "Missing Update data." }, { status: 400 });
     }
+    
+    const updates: UpdateHotelParams = data;
 
-    const hotel: Hotel | undefined =await hotelService.updateHotel(hotelId, data);
+    const updatedHotel: Hotel | undefined = await updateHotel(hotelId, updates, { hotelService: service });
 
-    if (!hotel) {
-      return NextResponse.json({ error: "Hotel Not found" }, { status: 404 });
-    }
-    return NextResponse.json(hotel, { status: 200 });
+    return NextResponse.json(updatedHotel, { status: 200 });
   } catch (error) {
+    const errorMessage = (error as Error).message;
+    
+    if (errorMessage.includes("Invalid update request")) {
+        return NextResponse.json({ error: errorMessage }, { status: 400 });
+    }
+
+    if (errorMessage.includes("not found")) {
+        return NextResponse.json({ error: errorMessage }, { status: 404 });
+    }
+
     return NextResponse.json(
-      { error: (error as Error).message },
-      { status: 400 }
+      { error: errorMessage },
+      { status: 500 }
     );
   }
 }
 
 export async function DELETE(
     request: Request, 
-    { params }: { params: { hotelId: string } }
+    { params }: { params: { hotelId: string } },
+    service: HotelService = getHotelService()
 ) {
   const { hotelId } = params;
   
   try {
-    await hotelService.deleteHotel(hotelId);
+    await deleteHotel(hotelId, { hotelService: service });
 
     return new NextResponse(null, { status: 204 }); 
   } catch (error) {
+    const errorMessage = (error as Error).message;
+
+    if (errorMessage.includes("Hotel ID is required for deletion")) {
+        return NextResponse.json({ error: errorMessage }, { status: 400 });
+    }
+    
     return NextResponse.json(
-      { error: (error as Error).message },
+      { error: errorMessage },
       { status: 500 }
     );
   }

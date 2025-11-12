@@ -1,7 +1,7 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { GET, PUT, DELETE } from "./route"; 
 import { Hotel } from "@hotel-project/domain";
-import { MOCK_HOTEL_DATA, mockedHotelServiceImplementations } from "../../../../mocks/hotel-service-api-mock"
+import { MOCK_HOTEL_DATA } from "../../../../mocks/hotel-service-api-mock"
 
 const MOCK_HOTEL_ID = MOCK_HOTEL_DATA.id;
 
@@ -96,6 +96,25 @@ describe("API /api/hotels/[hotelId]", () => {
     expect(response.status).toBe(400);
     expect(data.error).toContain("Missing Update data.");
     expect(mockUpdateHotel).not.toHaveBeenCalled();
+  });
+
+  test("PUT should return 404 if the hotel does not exist", async () => {
+    const updateData = { name: "Test" };
+    
+    mockUpdateHotel.mockRejectedValue(new Error(`Hotel with ID ${MOCK_HOTEL_ID} not found`)); 
+
+    const request = new Request("http://localhost", {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updateData),
+    });
+
+    const response = await PUT(request, mockParams);
+    const data = await response.json();
+
+    expect(response.status).toBe(404);
+    expect(data.error).toContain(`Hotel with ID ${MOCK_HOTEL_ID} not found`);
+    expect(mockUpdateHotel).toHaveBeenCalledOnce();
   });
 
   test("DELETE should return 204 after deleting the hotel", async () => {
