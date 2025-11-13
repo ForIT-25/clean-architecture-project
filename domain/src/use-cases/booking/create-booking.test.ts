@@ -47,4 +47,30 @@ describe('createBooking', () => {
     );
     expect(mockService.createBooking).not.toHaveBeenCalled();
   });
+
+  test('Throws an error if userId is empty or null', async () => {
+    const invalidDataEmpty = { ...validData, userId: '' };
+    const invalidDataNull = { ...validData, userId: null as unknown as string };
+
+    await expect(createBooking(mockService, invalidDataEmpty)).rejects.toThrow(
+      'User ID is required for creating a booking.'
+    );
+    await expect(createBooking(mockService, invalidDataNull)).rejects.toThrow(
+      'User ID is required for creating a booking.'
+    );
+    expect(mockService.createBooking).not.toHaveBeenCalled();
+  });
+
+  test('Throws an error if roomId is empty or null', async () => {
+    const invalidDataEmpty = { ...validData, roomId: '' };
+    const invalidDataNull = { ...validData, roomId: null as unknown as string };
+
+    await expect(createBooking(mockService, invalidDataEmpty)).rejects.toThrow(
+      'Room ID is required for creating a booking.'
+    );
+    await expect(createBooking(mockService, invalidDataNull)).rejects.toThrow(
+      'Room ID is required for creating a booking.'
+    );
+    expect(mockService.createBooking).not.toHaveBeenCalled();
+  });
 });

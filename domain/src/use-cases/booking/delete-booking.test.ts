@@ -19,4 +19,14 @@ describe('deleteBooking', () => {
     expect(mockService.deleteBooking).toHaveBeenCalledWith(bookingId);
     expect(mockService.deleteBooking).toHaveBeenCalledTimes(1);
   });
+
+  test('Throws an error if the booking ID is empty or null', async () => {
+    await expect(deleteBooking(mockService, "")).rejects.toThrow(
+      'Booking ID is required for deletion.'
+    );
+    await expect(deleteBooking(mockService, null as unknown as string)).rejects.toThrow(
+      'Booking ID is required for deletion.'
+    );
+    expect(mockService.deleteBooking).not.toHaveBeenCalled();
+  });
 });

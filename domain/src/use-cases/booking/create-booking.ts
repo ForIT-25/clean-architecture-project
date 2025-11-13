@@ -5,6 +5,13 @@ export async function createBooking(
   service: BookingService,
   data: BookingCreateData
 ): Promise<Booking> {
+  if (!data.userId || data.userId.trim() === "") {
+    throw new Error("User ID is required for creating a booking.");
+  }
+  if (!data.roomId || data.roomId.trim() === "") {
+    throw new Error("Room ID is required for creating a booking.");
+  }
+  
   if (data.totalPrice <= 0) {
     throw new Error("Total price must be positive.");
   }

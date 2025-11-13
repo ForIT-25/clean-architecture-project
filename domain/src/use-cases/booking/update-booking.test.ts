@@ -54,4 +54,16 @@ describe('updateBooking', () => {
     expect(mockService.updateBooking).toHaveBeenCalledWith(bookingId, updates);
     expect(result).toBeDefined();
   });
+
+  test('Throws an error if the booking ID is empty or null', async () => {
+    const updates: BookingUpdateData = { totalPrice: 500.00 };
+
+    await expect(updateBooking(mockService, "", updates)).rejects.toThrow(
+      'Booking ID is required for updating.'
+    );
+    await expect(updateBooking(mockService, null as unknown as string, updates)).rejects.toThrow(
+      'Booking ID is required for updating.'
+    );
+    expect(mockService.updateBooking).not.toHaveBeenCalled();
+  });
 });

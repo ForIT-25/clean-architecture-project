@@ -4,8 +4,9 @@ export const deleteBooking = async (
   service: BookingService,
   bookingId: string
 ): Promise<void> => {
-
-  // Lógica de negocio (verificar permisos o estado)
+  if (!bookingId || bookingId.trim() === "") {
+    throw new Error("Booking ID is required for deletion.");
+  }
 
   await service.deleteBooking(bookingId);
 };
