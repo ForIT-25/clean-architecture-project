@@ -13,7 +13,7 @@ vi.mock("@hotel-project/backend", () => {
   };
 });
 
-describe("API /api/hotels/[hotelId]/rooms (Test de Integración Limpio)", () => {
+describe("API /api/hotels/[hotelId]/rooms", () => {
   const roomData: Room = MOCK_ROOM_DATA; //
   const mockParams = { params: { hotelId: MOCK_HOTEL_ID } };
   const mockRooms: Room[] = [roomData];
@@ -22,7 +22,7 @@ describe("API /api/hotels/[hotelId]/rooms (Test de Integración Limpio)", () => 
       vi.clearAllMocks();
   });
 
-  test("GET debe retornar 200 y una lista de rooms para el hotel", async () => {
+  test("Return 200 and a list of rooms for the hotel", async () => {
     mockedService.findRoomByHotelId.mockResolvedValue(mockRooms);
     
     const response = await GET(new Request("http://localhost"), mockParams);
@@ -33,7 +33,7 @@ describe("API /api/hotels/[hotelId]/rooms (Test de Integración Limpio)", () => 
     expect(mockedService.findRoomByHotelId).toHaveBeenCalledWith(MOCK_HOTEL_ID);
   });
 
-  test("GET debe retornar 400 si el hotel ID está vacío (Validación UC)", async () => {
+  test("Return 400 if the hotel ID is empty", async () => {
     const errorParams = { params: { hotelId: "" } };
     
     const response = await GET(new Request("http://localhost"), errorParams);
@@ -65,7 +65,7 @@ describe("API /api/hotels/[hotelId]/rooms (Test de Integración Limpio)", () => 
     updatedAt: new Date()
   };
   
-  test("POST debe retornar 201 después de crear un nuevo room", async () => {
+  test("Returns 201 and the room created", async () => {
     mockedService.createRoom.mockResolvedValue(createdRoom); 
 
     const request = new Request("http://localhost", {
@@ -83,7 +83,7 @@ describe("API /api/hotels/[hotelId]/rooms (Test de Integración Limpio)", () => 
     );
   });
 
-  test("POST debe retornar 400 si falta un campo requerido (Handler validation)", async () => {
+  test("Return 400 if a required field is missing)", async () => {
     const invalidBody = { ...roomRequestBody, price: undefined };
     
     const request = new Request("http://localhost", {
@@ -100,7 +100,7 @@ describe("API /api/hotels/[hotelId]/rooms (Test de Integración Limpio)", () => 
     expect(mockedService.createRoom).not.toHaveBeenCalled();
   });
   
-  test("POST debe retornar 400 si el precio es <= 0 (Validación UC)", async () => {
+  test("Return 400 if the price is <= 0", async () => {
     const invalidBody = { ...roomRequestBody, price: 0 };
  
     const request = new Request("http://localhost", {
