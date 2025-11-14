@@ -3,7 +3,7 @@ import { deleteBooking, updateBooking, findBookingById  } from '@hotel-project/d
 import { BookingService, BookingUpdateData } from '@hotel-project/domain';
 import { BookingServiceImplementation } from '@hotel-project/backend';
 
-const service: BookingService = new BookingServiceImplementation; 
+const service: BookingService = new BookingServiceImplementation();
 
 interface Params {
     params: {

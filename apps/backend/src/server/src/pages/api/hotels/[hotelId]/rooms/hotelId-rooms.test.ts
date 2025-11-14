@@ -28,8 +28,10 @@ describe("API /api/hotels/[hotelId]/rooms", () => {
     const response = await GET(new Request("http://localhost"), mockParams);
     const data = await response.json();
 
+    const serializedMockRooms = JSON.parse(JSON.stringify(mockRooms));
+
     expect(response.status).toBe(200);
-    expect(data).toEqual(mockRooms);
+    expect(data).toEqual(serializedMockRooms);
     expect(mockedService.findRoomByHotelId).toHaveBeenCalledWith(MOCK_HOTEL_ID);
   });
 

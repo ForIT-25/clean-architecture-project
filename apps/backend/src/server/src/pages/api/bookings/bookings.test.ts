@@ -1,25 +1,29 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { GET, POST } from './route';
 import { Booking, BookingCreateData, BookingService } from '@hotel-project/domain';
-import { 
-    MOCK_BOOKING_DATA,
-    MockedBookingServiceAPI,
-    createMockBookingServiceAPI
-} from '../../../mocks/booking-service-api-mock'; 
+import { MOCK_BOOKING_DATA } from '../../../mocks/booking-service-api-mock'; 
 
-const mockedService: MockedBookingServiceAPI = createMockBookingServiceAPI();
+const localMocks = vi.hoisted(() => {
+    const mockFindBookingAll = vi.fn();
+    const mockCreateBooking = vi.fn(); 
+    
+    return { mockFindBookingAll, mockCreateBooking };
+});
+
+vi.mock('@hotel-project/backend', () => {
+    return {
+        BookingServiceImplementation: vi.fn(() => ({
+            findBookingAll: localMocks.mockFindBookingAll,
+            createBooking: localMocks.mockCreateBooking,
+        })),
+    };
+});
 
 vi.mock('@hotel-project/domain', () => ({
     findBookingAll: vi.fn((service: BookingService) => service.findBookingAll()),
-}));
-
-vi.mock('@hotel-project/domain', () => ({
     createBooking: vi.fn((service: BookingService, data: BookingCreateData) => service.createBooking(data)),
 }));
 
-vi.mock('@hotel-project/backend', () => ({
-    bookingServiceInstance: mockedService,
-}));
 
 interface PostBody {
     userId: string;
@@ -35,6 +39,7 @@ const mockRequest = (body: PostBody) => ({
 
 
 describe('/api/bookings', () => {
+  const { mockFindBookingAll, mockCreateBooking } = localMocks;
   
   beforeEach(() => {
     vi.clearAllMocks(); 
@@ -42,18 +47,18 @@ describe('/api/bookings', () => {
 
   describe('GET', () => {
     test('Return 200 and a reservation list', async () => {
-      mockedService.findBookingAll.mockResolvedValue([MOCK_BOOKING_DATA]);
+      mockFindBookingAll.mockResolvedValue([MOCK_BOOKING_DATA]);
 
       const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
       expect(data[0].id).toBe(MOCK_BOOKING_DATA.id);
-      expect(mockedService.findBookingAll).toHaveBeenCalledTimes(1);
+      expect(mockFindBookingAll).toHaveBeenCalledTimes(1);
     });
 
     test('Returns 500 if the domain service fails', async () => {
-      mockedService.findBookingAll.mockRejectedValue(new Error('DB connection failed'));
+      mockFindBookingAll.mockRejectedValue(new Error('DB connection failed'));
 
       const response = await GET();
       expect(response.status).toBe(500);
@@ -78,7 +83,7 @@ describe('/api/bookings', () => {
         endDate: new Date(validBody.endDate),
       };
       
-      mockedService.createBooking.mockResolvedValue(createdBooking);
+      mockCreateBooking.mockResolvedValue(createdBooking);
 
       const request = mockRequest(validBody);
       const response = await POST(request);
@@ -87,13 +92,13 @@ describe('/api/bookings', () => {
       expect(response.status).toBe(201);
       expect(data.id).toBe('B-NEW');
       
-      const serviceCallArgs: BookingCreateData = mockedService.createBooking.mock.calls[0][0];
+      const serviceCallArgs: BookingCreateData = mockCreateBooking.mock.calls[0][0];
       expect(serviceCallArgs.startDate).toBeInstanceOf(Date);
     });
 
     test('Returns 400 due to validation error', async () => {
       const validationError = new Error('Total price must be positive.');
-      mockedService.createBooking.mockRejectedValue(validationError);
+      mockCreateBooking.mockRejectedValue(validationError);
 
       const invalidBody: PostBody = { ...validBody, totalPrice: -5 }; 
       const request = mockRequest(invalidBody);

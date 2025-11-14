@@ -14,7 +14,6 @@ describe("Create User Use Case", () => {
       name: "Andres",
       email: "andy@gmail.com",
       password: "12345678",
-      role: ROLES.GUEST,
     };
   });
 
@@ -22,18 +21,17 @@ describe("Create User Use Case", () => {
     mockService.findUserByEmail.mockResolvedValue(undefined); 
     const generatedId = 'ID-GENERATED';
     
-    mockService.saveUser.mockResolvedValue({
+    mockService.createUser.mockResolvedValue({
         ...MockUser, 
         id: generatedId, 
         ...userData,
-        role: userData.role! 
     });
 
     const user = await createUser(userData, mockService); 
 
     expect(user.id).toBe(generatedId);
     expect(user.email).toBe("andy@gmail.com");
-    expect(mockService.saveUser).toHaveBeenCalledWith(
+    expect(mockService.createUser).toHaveBeenCalledWith(
       expect.objectContaining({ 
         name: "Andres",
         email: "andy@gmail.com",
@@ -49,6 +47,6 @@ describe("Create User Use Case", () => {
       "Email already in use"
     );
 
-    expect(mockService.saveUser).not.toHaveBeenCalled();
+    expect(mockService.createUser).not.toHaveBeenCalled();
   });
 });
