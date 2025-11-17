@@ -5,3 +5,7 @@ export interface Hotel extends Entity{
   address: string;
   description: string;
 }
+
+export type CreateHotelData = Omit<Hotel, 'id' | 'createdAt' | 'updatedAt'>;
+
+export type UpdateHotelParams = Partial<Hotel>;

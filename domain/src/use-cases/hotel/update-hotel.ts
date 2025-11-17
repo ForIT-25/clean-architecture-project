@@ -1,10 +1,8 @@
-import { Hotel, HotelService } from "@hotel-project/domain";
+import { Hotel, HotelService, UpdateHotelParams } from "@hotel-project/domain";
 
 export interface UpdateHotelDependencies {
   hotelService: HotelService;
 }
-
-export type UpdateHotelParams = Partial<Hotel>;
 
 export async function updateHotel(
   hotelId: string, 
