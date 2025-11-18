@@ -1,31 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, type NavbarProps } from '../components/Navbar';
 import { HotelList } from '../components/HotelList';
-import type { Hotel } from '../components/HotelCard'; 
-
-const mockHotels: Hotel[] = [
-  { 
-    id: '1',
-    name: 'Grand Hyatt',
-    address: 'Buenos Aires, Argentina',
-    description: 'Hotel de Lujo',
-    imageUrl: 'https://www.grandimperial.com.my/wp-content/uploads/2024/02/Grand-Imperial-Group-Outlet-Banner-3.jpg'
-  },
-  { 
-    id: '2',
-    name: 'Sheraton Tower',
-    address: 'Santiago, Chile',
-    description: 'Hotel Internacional',
-    imageUrl: 'https://via.placeholder.com/300x200?text=Sheraton' 
-  },
-  { 
-    id: '3',
-    name: 'Hilton Garden',
-    address: 'Lima, Perú',
-    description: 'Hotel y Naturaleza',
-    imageUrl: 'https://via.placeholder.com/300x200?text=Hilton' 
-  },
-];
+import type { Hotel } from '@hotel-project/domain'
+import { fetchAllHotels } from '../services/api';
 
 export const HomePage: React.FC<NavbarProps> = ({
     appName,
@@ -40,12 +17,26 @@ export const HomePage: React.FC<NavbarProps> = ({
   const [error, setError] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setHotels(mockHotels);
-      setLoading(false);
-      //setError('Fallo la conexión con el servidor');
-    }, 1000);
+    const loadHotels = async () => {
+      try {
+        setLoading(true);
+        setError(undefined);
+
+        const data = await fetchAllHotels();
+        
+        setHotels(data);
+      } catch (err) {
+        console.error("Error fetching hotels:", err);
+        setError(
+          (err as Error).message || 'Fallo al cargar hoteles desde el servidor.'
+        );
+        setHotels(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadHotels();
   }, []);
 
   const handleSelectHotel = (hotelId: string) => {

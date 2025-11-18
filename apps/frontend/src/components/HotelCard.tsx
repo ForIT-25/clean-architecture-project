@@ -5,7 +5,6 @@ export interface Hotel {
   name: string;
   address: string;
   description: string;
-  imageUrl: string;
 }
 
 interface HotelCardProps {
@@ -19,11 +18,6 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel, onSelect }) => {
       className="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:shadow-xl cursor-pointer"
       onClick={() => onSelect(hotel.id)}
     >
-      <img
-        className="w-full h-48 object-cover"
-        src={hotel.imageUrl}
-        alt={`Imagen de ${hotel.name}`}
-      />
       <div className="p-4 space-y-1">
         <h3 className="text-xl font-semibold text-gray-900">{hotel.name}</h3>
         <p className="text-sm text-gray-600">
