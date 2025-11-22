@@ -1,13 +1,36 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
-import { createUser, CreateUserData, ROLES } from "@hotel-project/domain";
-import { MockedUserService, createMockUserService, MockUser } from "./mocks/user-service-mock";
+import { createUser,
+  CreateUserData,
+  UserService,
+  PasswordHasher
+} from "@hotel-project/domain";
+import {
+  MockedUserService,
+  createMockUserService,
+  MockUser,
+  MockedPasswordHasher,
+  createMockPasswordHasher
+} from "./mocks/user-service-mock";
 
+interface CreateUserDependencies {
+  userService: UserService;
+  hasher: PasswordHasher;
+}
+
+let mockDependencies: CreateUserDependencies;
+let hasherMock: MockedPasswordHasher;
 let mockService: MockedUserService; 
 let userData: CreateUserData;
 
 describe("Create User Use Case", () => {
   beforeEach(() => {
     mockService = createMockUserService();
+    hasherMock = createMockPasswordHasher();
+    hasherMock.hashPassword.mockResolvedValue('hashed_test_password');
+    mockDependencies = {
+      userService: mockService,
+      hasher: hasherMock,
+    };
     vi.clearAllMocks();
 
     userData = {
@@ -27,7 +50,7 @@ describe("Create User Use Case", () => {
         ...userData,
     });
 
-    const user = await createUser(userData, mockService); 
+    const user = await createUser(userData, mockDependencies.userService, mockDependencies.hasher); 
 
     expect(user.id).toBe(generatedId);
     expect(user.email).toBe("andy@gmail.com");
@@ -43,7 +66,10 @@ describe("Create User Use Case", () => {
   test("Throw error if email exists", async () => {
     mockService.findUserByEmail.mockResolvedValue(MockUser); 
 
-    await expect(createUser(userData, mockService)).rejects.toThrow(
+    await expect(createUser(userData,
+      mockDependencies.userService,
+      mockDependencies.hasher
+    )).rejects.toThrow(
       "Email already in use"
     );
 

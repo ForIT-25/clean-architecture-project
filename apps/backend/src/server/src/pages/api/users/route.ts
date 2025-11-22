@@ -1,15 +1,28 @@
 import { NextResponse } from "next/server";
-import { UserServiceImplementation } from "@hotel-project/backend";
+import { BcryptHasher, UserServiceImplementation } from "@hotel-project/backend";
 import { 
   User, 
   UserService, 
   CreateUserData, 
   findUserAll, 
-  createUser 
+  createUser, 
+  PasswordHasher
 } from "@hotel-project/domain";
 
 const getUserService = (): UserService => {
   return new UserServiceImplementation(); 
+};
+
+interface UserDependencies { 
+  userService: UserService; 
+  hasher: PasswordHasher;
+}
+
+const getDefaultUserDependencies = (): UserDependencies => {
+  return {
+    userService: new UserServiceImplementation(),
+    hasher: new BcryptHasher(),
+  };
 };
 
 export async function GET(
@@ -30,7 +43,7 @@ export async function GET(
 
 export async function POST(
   request: Request,
-  service: UserService = getUserService()
+  dependencies: UserDependencies = getDefaultUserDependencies()
 ) {
   try {
     const data = await request.json();
@@ -50,8 +63,8 @@ export async function POST(
       email: data.email,
       password: data.password,
     };
-
-    const newUser = await createUser(createUserData, service);
+    const { userService, hasher } = dependencies;
+    const newUser = await createUser(createUserData, userService, hasher);
 
     return NextResponse.json(
       { message: "User created successfully", user: newUser },
@@ -64,3 +77,4 @@ export async function POST(
     );
   }
 }
+

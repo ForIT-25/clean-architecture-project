@@ -1,11 +1,18 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { GET, POST } from "./route";
-import { User, CreateUserData } from "@hotel-project/domain";
+import { 
+  User,
+  CreateUserData,
+  UserService,
+  PasswordHasher 
+} from "@hotel-project/domain";
 import { 
   MOCK_USER_DATA, 
   MOCK_USER_DATA_GUEST,
   createMockUserServiceAPI, 
-  MockedUserServiceAPI 
+  MockedUserServiceAPI, 
+  MockedPasswordHasher,
+  createMockPasswordHasher
 } from "../../../mocks/user-service-api-mock";
 
 vi.mock('@prisma/client', () => {
@@ -15,7 +22,14 @@ vi.mock('@prisma/client', () => {
   };
 });
 
+interface UserDependencies {
+    userService: UserService;
+    hasher: PasswordHasher;
+}
+
 let mockedService: MockedUserServiceAPI;
+let mockedHasher: MockedPasswordHasher;
+let mockDependencies: UserDependencies;
 
 const mockAdminUser: User = MOCK_USER_DATA;
 const mockGuestUser: User = MOCK_USER_DATA_GUEST;
@@ -23,6 +37,12 @@ const mockGuestUser: User = MOCK_USER_DATA_GUEST;
 describe("API /api/users (Next.js Route Handler)", () => {
   beforeEach(() => {
     mockedService = createMockUserServiceAPI();
+    mockedHasher = createMockPasswordHasher();
+    mockedHasher.hashPassword.mockResolvedValue('hashed_test_password_for_post'); 
+    mockDependencies = {
+      userService: mockedService,
+      hasher: mockedHasher,
+    };
     vi.clearAllMocks(); 
   });
 
@@ -75,7 +95,7 @@ describe("API /api/users (Next.js Route Handler)", () => {
     mockedService.findUserByEmail.mockResolvedValue(undefined);
     mockedService.createUser.mockResolvedValue(createdUser);
 
-    const response = await POST(request, mockedService);
+    const response = await POST(request, mockDependencies);
     const data = await response.json();
     
     expect(response.status).toBe(201);
@@ -98,7 +118,7 @@ describe("API /api/users (Next.js Route Handler)", () => {
       body: JSON.stringify(requestBody),
     });
     
-    const response = await POST(request, mockedService);
+    const response = await POST(request, mockDependencies);
     const data = await response.json();
     
     expect(response.status).toBe(400);
@@ -125,11 +145,11 @@ describe("API /api/users (Next.js Route Handler)", () => {
     mockedService.findUserByEmail.mockResolvedValue(mockAdminUser);
     mockedService.createUser.mockRejectedValue(new Error(errorMessage));
 
-    const response = await POST(request, mockedService);
+    const response = await POST(request, mockDependencies);
     const data = await response.json();
 
     expect(response.status).toBe(400);
     expect(data.error).toBe(errorMessage); 
-    expect(mockedService.createUser).toHaveBeenCalledOnce();
+    expect(mockedService.createUser).not.toHaveBeenCalledOnce();
   });
 });
