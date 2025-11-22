@@ -52,7 +52,9 @@ src/
 │   ├── MyReservations.tsx
 │   └── AdminPanel.tsx
 ├── pages/
-│   └── HomePage.tsx
+│   ├── HomePage.tsx
+│   ├── RegisterPage.tsx
+│   └── LoginPage.tsx
 ├── services/
 │   └── api.tsx
 ├── stories/

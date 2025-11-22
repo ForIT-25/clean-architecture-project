@@ -1,94 +1,106 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+
+// Importación de Páginas (de src/pages/)
 import { HomePage } from './pages/HomePage';
-import { Login, type LoginProps } from './components/Login';
-import { Register, type RegisterData } from './components/Register';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import type { NavbarProps } from './components/Navbar'; // Usamos el tipo de la Navbar
 
-type AppView = 'home' | 'login' | 'register';
+// --- 1. Componente Guardián de Rutas (ProtectedRoute) ---
+/**
+ * Un componente que protege rutas. Si el usuario no está logueado,
+ * redirige a la ruta de Login.
+ */
+interface ProtectedRouteProps {
+    isLoggedIn: boolean;
+    children: React.ReactNode;
+}
 
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ isLoggedIn, children }) => {
+  if (!isLoggedIn) {
+    // Si no está logueado, lo envía a /login (con 'replace' para no dejar historial)
+    return <Navigate to="/login" replace />; 
+  }
+  return children;
+};
+
+
+// --- 2. Componente Principal App ---
 export const App: React.FC = () => {
-  const [currentView, setCurrentView] = useState<AppView>('home');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // --- Estado Global de Autenticación (Simple) ---
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState<string | undefined>(undefined);
-  const handleLoginSubmit = useCallback((data: { email: string; password: string }) => {
-    console.log("Intentando iniciar sesión con:", data);
-    if (data.email === 'demo@app.com' && data.password === 'password') {
-      setIsAuthenticated(true);
-      setUserName('Usuario Demo');
-      setCurrentView('home');
-      alert('¡Inicio de sesión exitoso!');
-    } else {
-      alert('Error: Credenciales incorrectas');
-    }
-  }, []);
+  const navigate = useNavigate();
 
-  const handleRegisterSubmit = useCallback((data: RegisterData) => {
-    console.log("Intentando registrar usuario:", data);
-    if (data.password !== data.confirm) {
-      alert('Error: Las contraseñas no coinciden');
-      return;
-    }
-    alert(`Registro exitoso para ${data.name}. Por favor, inicie sesión.`);
-    setCurrentView('login');
-  }, []);
+  // NOTA: En un proyecto real, usarías useEffect aquí para:
+  // 1. Cargar el token/estado de autenticación del localStorage.
+  // 2. Verificar si el token es válido.
+  // useEffect(() => { /* Cargar estado de auth */ }, []);
 
-  const handleLogout = useCallback(() => {
-    setIsAuthenticated(false);
+  // --- Funciones de Manejo de Navegación y Autenticación ---
+  const handleLoginSuccess = (user: { name: string, token: string }) => {
+    // Lógica para guardar el token y actualizar el estado
+    setIsLoggedIn(true);
+    setUserName(user.name);
+    // Redirigir al usuario al Home después de un login exitoso
+    navigate('/'); 
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
     setUserName(undefined);
-    setCurrentView('login');
-  }, []);
+    navigate('/login');
+  };
 
-  const handleNavigateToProfile = useCallback(() => {
-    alert('Navegando a la vista de Perfil. (Aún no implementada)');
-  }, []);
+  const handleNavigateToLogin = () => navigate('/login');
+  const handleNavigateToRegister = () => navigate('/register');
+  const handleNavigateToProfile = () => alert('Navegando a la página de perfil...');
 
-  const renderView = () => {
-    if (!isAuthenticated && currentView !== 'register') {
-        return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-50">
-                <Login 
-                    onSubmit={handleLoginSubmit} 
-                />
-                <button 
-                    onClick={() => setCurrentView('register')}
-                    className="absolute bottom-10 text-sm text-blue-600 hover:text-blue-700"
-                >
-                    ¿No tienes cuenta? Regístrate aquí
-                </button>
-            </div>
-        );
-    }
-    
-    if (currentView === 'register') {
-        return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-50">
-                <Register 
-                    onSubmit={handleRegisterSubmit} 
-                />
-                <button 
-                    onClick={() => setCurrentView('login')}
-                    className="absolute bottom-10 text-sm text-blue-600 hover:text-blue-700"
-                >
-                    ¿Ya tienes cuenta? Inicia sesión
-                </button>
-            </div>
-        );
-    }
 
-    return (
-      <HomePage 
-        appName="Hotellium"
-        isLoggedIn={isAuthenticated}
-        userName={userName}
-        onLogin={() => setCurrentView('login')}
-        onLogout={handleLogout}
-        onNavigateToProfile={handleNavigateToProfile}
-      />
-    );
+  const commonNavbarProps: NavbarProps = {
+    appName: "HotelManager",
+    isLoggedIn: isLoggedIn,
+    userName: userName,
+    onLogin: handleNavigateToLogin,
+    onLogout: handleLogout,
+    onNavigateToProfile: handleNavigateToProfile,
   };
 
   return (
-    <div className="App">
-      {renderView()}
-    </div>
+    <Routes>
+      
+      <Route path="/" element={
+        <ProtectedRoute isLoggedIn={isLoggedIn}>
+          <HomePage {...commonNavbarProps} />
+        </ProtectedRoute>
+      } />
+      
+      <Route 
+          path="/login" 
+          element={<LoginPage onLoginSuccess={handleLoginSuccess} />} 
+      />
+      <Route 
+          path="/register" 
+          element={<RegisterPage onRegisterSuccess={() => navigate('/login')} />} 
+      />
+      
+      <Route 
+          path="*" 
+          element={
+            <div className="p-8 text-center min-h-screen bg-gray-50">
+              <h1 className="text-4xl font-bold text-red-600 mb-4">404</h1>
+              <p className="text-gray-700">Página no encontrada.</p>
+              <button 
+                  onClick={() => navigate('/')} 
+                  className="mt-4 px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition"
+              >
+                  Ir a Inicio
+              </button>
+            </div>
+          } 
+      />
+
+    </Routes>
   );
 };

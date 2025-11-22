@@ -7,7 +7,7 @@ export type RegisterData = {
   confirm: string;
 };
 
-type RegisterProps = {
+export type RegisterProps = {
   loading?: boolean;
   error?: string;
   onSubmit: (data: RegisterData) => void;
