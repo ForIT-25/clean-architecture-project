@@ -1,5 +1,6 @@
 import type { 
-  Hotel, 
+  Hotel,
+  User,
   CreateHotelData, 
   UpdateHotelParams, 
   Room,
@@ -8,12 +9,38 @@ import type {
   Booking,
   BookingCreateData,
   BookingUpdateData,
+  CreateUserData,
+  UpdateUserData,
 } from "@hotel-project/domain";
+
+export interface Credentials {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  }
+}
 
 const API_BASE_URL = 'localhost:3000';
 const API_URL_HOTEL = `${API_BASE_URL}/api/hotels`;
 const API_URL_ROOM = `${API_BASE_URL}/api/rooms`;
 const API_URL_BOOKING = `${API_BASE_URL}/api/bookings`;
+const API_URL_AUTH = `${API_BASE_URL}/api/auth`;
+const API_URL_USERS = `${API_BASE_URL}/api/users`;
+
+export interface Credentials {
+    email: string;
+    password: string;
+}
+
+export type UserWithoutPassword = Omit<User, 'password'>; 
 
 export async function fetchAllHotels(): Promise<Hotel[]> {
   const response = await fetch(API_URL_HOTEL, {
@@ -321,4 +348,126 @@ export async function fetchBookingsByUserId(userId: string): Promise<Booking[]> 
   }
 
   return (await response.json()) as Booking[];
+}
+
+export async function loginUser(credentials: Credentials): Promise<AuthResponse> {
+  const response = await fetch(API_URL_AUTH, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(credentials),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({ error: "Error desconocido de autenticación" }));
+    
+    if (response.status === 401) {
+        throw new Error('Credenciales inválidas. Verifica tu email y contraseña.');
+    }
+    
+    throw new Error(errorBody.error || `Fallo al iniciar sesión: ${response.statusText}`);
+  }
+
+  return (await response.json()) as AuthResponse;
+}
+
+export async function registerUser(data: CreateUserData): Promise<void> {
+  const response = await fetch(API_URL_USERS, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data), 
+  });
+
+  if (response.status === 201) { return; } 
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({ error: "Error desconocido de registro" }));
+    
+    if (response.status === 400) {
+        throw new Error(errorBody.error || 'El email ya está en uso. Intenta con otro.');
+    }
+    
+    throw new Error(errorBody.error || `Fallo al registrar el usuario: ${response.statusText}`);
+  }
+}
+
+export async function fetchAllUsers(token: string): Promise<UserWithoutPassword[]> {
+  const response = await fetch(API_URL_USERS, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({ error: "Error desconocido" }));
+    throw new Error(errorBody.error || `Fallo al obtener usuarios: ${response.statusText}`);
+  }
+
+  return (await response.json()) as UserWithoutPassword[];
+}
+
+export async function fetchUserById(userId: string, token: string): Promise<UserWithoutPassword> {
+  const url = `${API_URL_USERS}/${userId}`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({ error: "Error desconocido" }));
+    if (response.status === 404) {
+        throw new Error(`Usuario con ID ${userId} no encontrado.`);
+    }
+    throw new Error(errorBody.error || `Fallo al obtener usuario: ${response.statusText}`);
+  }
+
+  return (await response.json()) as UserWithoutPassword;
+}
+
+export async function updateUser(userId: string, updates: UpdateUserData, token: string): Promise<UserWithoutPassword> {
+  const url = `${API_URL_USERS}/${userId}`;
+  const response = await fetch(url, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+    body: JSON.stringify(updates),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({ error: "Error desconocido" }));
+    if (response.status === 404) {
+        throw new Error(`Usuario con ID ${userId} no encontrado para actualizar.`);
+    }
+    throw new Error(errorBody.error || `Fallo al actualizar usuario: ${response.statusText}`);
+  }
+  
+  const data = await response.json();
+  return data.user as UserWithoutPassword;
+}
+
+export async function deleteUser(userId: string, token: string): Promise<void> {
+  const url = `${API_URL_USERS}/${userId}`;
+  const response = await fetch(url, {
+    method: "DELETE",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  if (response.status === 204) { return; } 
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({ error: "Error de eliminación" }));
+    throw new Error(errorBody.error || `Fallo al eliminar usuario ${userId}: ${response.statusText}`);
+  }
 }
