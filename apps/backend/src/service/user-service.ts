@@ -1,9 +1,16 @@
 import { PrismaClient } from "@prisma/client";
-import { CreateUserData, ROLES, UpdateUserData, User, UserService } from '@hotel-project/domain';
+import { CreateUserData, ROLES, UpdateUserData, User, UserService, PasswordHasher } from '@hotel-project/domain';
+import { BcryptHasher } from './password-hasher';
 
 const prisma = new PrismaClient();
 
 export class UserServiceImplementation implements UserService{
+  private readonly passwordHasher: PasswordHasher;
+
+  constructor(hasher: PasswordHasher = new BcryptHasher()) {
+    this.passwordHasher = hasher;
+  }
+
   async findUserAll(): Promise<User[]> {
     const users: User[] = await prisma.user.findMany({
       include: {
@@ -34,11 +41,12 @@ export class UserServiceImplementation implements UserService{
   }
 
   async createUser(data: CreateUserData): Promise<User> {
+    const hashedPassword = await this.passwordHasher.hashPassword(data.password);
     const user: User = await prisma.user.create({
       data: {
         name: data.name,
         email: data.email,
-        password: data.password,
+        password: hashedPassword,
         role: ROLES.GUEST,
       },
     });

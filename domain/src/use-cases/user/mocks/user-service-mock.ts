@@ -1,4 +1,4 @@
-import { CreateUserData, User, UpdateUserData } from "@hotel-project/domain";
+import { CreateUserData, User, UpdateUserData, TokenPayload } from "@hotel-project/domain";
 import { vi, Mock } from "vitest";
 
 export const MockUser: User = {
@@ -18,6 +18,30 @@ export type MockedUserService = {
   createUser: Mock<(data: CreateUserData) => Promise<User>>;
   updateUser: Mock<(userId: string, updates: UpdateUserData) => Promise<User | undefined>>;
   deleteUser: Mock<(userId: string) => Promise<void>>;
+};
+
+export type MockedPasswordHasher = {
+    hashPassword: Mock<(password: string) => Promise<string>>;
+    comparePassword: Mock<(password: string, hash: string) => Promise<boolean>>;
+};
+
+export type MockedTokenGenerator = {
+    generate: Mock<(payload: TokenPayload) => Promise<string>>;
+    verify: Mock<(token: string) => Promise<TokenPayload | undefined>>;
+};
+
+export const createMockPasswordHasher = (): MockedPasswordHasher => {
+    return {
+        hashPassword: vi.fn(),
+        comparePassword: vi.fn(),
+    };
+};
+
+export const createMockTokenGenerator = (): MockedTokenGenerator => {
+    return {
+        generate: vi.fn(),
+        verify: vi.fn(),
+    };
 };
 
 export const createMockUserService = (): MockedUserService => {

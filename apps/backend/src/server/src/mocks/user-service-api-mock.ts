@@ -1,5 +1,11 @@
 import { vi, Mock } from "vitest";
-import { Entity, CreateUserData, User, UpdateUserData, ROLES } from "@hotel-project/domain";
+import { Entity,
+  CreateUserData,
+  User,
+  UpdateUserData,
+  ROLES,
+  TokenPayload
+ } from "@hotel-project/domain";
 
 export type MockedUserServiceAPI = {
   findUserAll: Mock<() => Promise<User[]>>; 
@@ -8,6 +14,16 @@ export type MockedUserServiceAPI = {
   createUser: Mock<(data: CreateUserData) => Promise<User>>;
   updateUser: Mock<(userId: string, updates: UpdateUserData) => Promise<User | undefined>>;
   deleteUser: Mock<(userId: string) => Promise<void>>;
+};
+
+export type MockedPasswordHasher = {
+  hashPassword: Mock<(password: string) => Promise<string>>;
+  comparePassword: Mock<(password: string, hash: string) => Promise<boolean>>;
+};
+
+export type MockedTokenGenerator = {
+  generate: Mock<(payload: TokenPayload) => Promise<string>>;
+  verify: Mock<(token: string) => Promise<TokenPayload | undefined>>;
 };
 
 const baseEntityProps: Omit<Entity, 'id'> = {
@@ -34,14 +50,30 @@ export const MOCK_USER_DATA_GUEST: User = {
 };
 
 export const createMockUserServiceAPI = (): MockedUserServiceAPI => {
-    return {
-        findUserAll: vi.fn(),
-        findUserById: vi.fn(),
-        findUserByEmail: vi.fn(),
-        createUser: vi.fn(),
-        updateUser: vi.fn(),
-        deleteUser: vi.fn(),
-    } as MockedUserServiceAPI;
+  return {
+    findUserAll: vi.fn(),
+    findUserById: vi.fn(),
+    findUserByEmail: vi.fn(),
+    createUser: vi.fn(),
+    updateUser: vi.fn(),
+    deleteUser: vi.fn(),
+  } as MockedUserServiceAPI;
+};
+
+export const createMockPasswordHasher = (): MockedPasswordHasher => {
+  return {
+    hashPassword: vi.fn(),
+    comparePassword: vi.fn(),
+  };
+};
+
+export const createMockTokenGenerator = (): MockedTokenGenerator => {
+  return {
+    generate: vi.fn(),
+    verify: vi.fn(),
+  };
 };
 
 export const mockedUserServiceImplementations: MockedUserServiceAPI = createMockUserServiceAPI();
+export const mockedPasswordHasher: MockedPasswordHasher = createMockPasswordHasher();
+export const mockedTokenGenerator: MockedTokenGenerator = createMockTokenGenerator();
