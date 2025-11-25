@@ -6,11 +6,9 @@ const getHotelService = (): HotelService => {
   return new HotelServiceImplementation(); 
 };
 
-export async function GET(
-  request: Request,
-  service: HotelService = getHotelService()
-) {
+export async function GET() {
   try {
+    const service: HotelService = getHotelService()
     const hotels: Hotel[] = await findHotelAll({ hotelService: service });
     
     return NextResponse.json(hotels, { status: 200 });
@@ -22,11 +20,9 @@ export async function GET(
   }
 }
 
-export async function POST(
-  request: Request,
-  service: HotelService = getHotelService()
-) {
+export async function POST(request: Request) {
   try {
+    const service: HotelService = getHotelService()
     const data = await request.json();
     const requiredFields = ["name", "address", "description"];
     
