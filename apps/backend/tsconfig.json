@@ -103,5 +103,5 @@
     "references": [{
     "path": "../../domain"
   }],
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "src/server/next.config.mjs"]
 }

@@ -2,32 +2,33 @@
   "name": "clean-architecture-project",
   "version": "1.0.0",
   "description": "Proyecto realizado para aplicar conceptos de arquitectura limpia en academy ForIT",
-  "main": "index.js",
   "private": true,
+
   "workspaces": [
     "domain",
-    "apps/backend/",
-    "apps/backend/src/server"
+    "apps/backend"
   ],
+
   "scripts": {
-    "install": "npm install --workspaces",
+    "prisma:generate": "npm -w @hotel-project/backend run prisma:generate",
+    "prisma:migrate": "npm -w @hotel-project/backend run prisma:migrate",
+    "prisma:reset": "npm -w @hotel-project/backend run prisma:reset",
     "test": "vitest",
     "test:domain": "vitest domain/src",
     "test:back": "vitest apps/backend/src",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
+
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ForIT-25/clean-architecture-project.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/ForIT-25/clean-architecture-project/issues"
   },
   "homepage": "https://github.com/ForIT-25/clean-architecture-project#readme",
+
   "devDependencies": {
     "@eslint/js": "^9.37.0",
     "@eslint/json": "^0.13.2",
@@ -48,6 +49,7 @@
     "typescript-eslint": "^8.46.0",
     "vitest": "^3.2.4"
   },
+
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "jsonwebtoken": "^9.0.2"
