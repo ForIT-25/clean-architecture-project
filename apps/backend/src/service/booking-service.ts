@@ -15,12 +15,8 @@ export class BookingServiceImplementation implements BookingService {
   }
 
   async findBookingById(bookingId: string): Promise<Booking | undefined> {
-    const booking: Booking = await prisma.booking.findUnique({
+    const booking: Booking | null = await prisma.booking.findUnique({
       where: { id: bookingId },
-      include: {
-        user: true,
-        room: true,
-      },
     });
     return booking ?? undefined;
   }

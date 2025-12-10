@@ -1,15 +1,14 @@
+import * as bcrypt from "bcryptjs";
+import { PasswordHasher } from "@hotel-project/domain";
 
-import { PasswordHasher } from '@hotel-project/domain';
-import * as bcrypt from 'bcryptjs';
+const saltRounds = 10;
 
-export class BcryptHasher implements PasswordHasher{
-  private readonly saltRounds = 10;
-
+export const passwordService: PasswordHasher = {
   async hashPassword(password: string): Promise<string> {
-    return bcrypt.hash(password, this.saltRounds);
-  }
+    return bcrypt.hash(password, saltRounds);
+  },
 
   async comparePassword(password: string, hash: string): Promise<boolean> {
     return bcrypt.compare(password, hash);
-  }
-}
+  },
+};

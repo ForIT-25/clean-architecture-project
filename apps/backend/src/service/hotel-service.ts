@@ -14,9 +14,8 @@ export class HotelServiceImplementation implements HotelService {
   }
 
   async findHotelById(hotelId: string): Promise<Hotel | undefined> {
-    const hotel: Hotel = await prisma.hotel.findUnique({
+    const hotel: Hotel | null = await prisma.hotel.findUnique({
       where: { id: hotelId },
-      include: { rooms: true},
     });
     return hotel ?? undefined;
   }

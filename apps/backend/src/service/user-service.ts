@@ -1,63 +1,68 @@
 import { PrismaClient } from "@prisma/client";
-import { CreateUserData, ROLES, UpdateUserData, User, UserService } from '@hotel-project/domain';
+import {
+  CreateUserData,
+  ROLES,
+  UpdateUserData,
+  User,
+  UserRole,
+  UserService,
+} from "@hotel-project/domain";
 
 const prisma = new PrismaClient();
 
-export class UserServiceImplementation implements UserService{
+function mapUser(dbUser: any): User {
+  return {
+    id: dbUser.id,
+    createdAt: dbUser.createdAt,
+    updatedAt: dbUser.updatedAt,
+    name: dbUser.name,
+    email: dbUser.email,
+    password: dbUser.password,
+    role: dbUser.role as UserRole,
+  };
+}
+
+export const userService: UserService = {
   async findUserAll(): Promise<User[]> {
-    const users: User[] = await prisma.user.findMany({
-      include: {
-        bookings: true,
-      },
-    });
-    return users;
-  }
+    const users = await prisma.user.findMany();
+    return users.map(mapUser);
+  },
 
   async findUserById(userId: string): Promise<User | undefined> {
-    const user: User = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: {
-        bookings: true,
-      },
     });
-    return user;
-  }
+    return mapUser(user) ?? undefined;
+  },
 
   async findUserByEmail(email: string): Promise<User | undefined> {
-    const user: User = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email },
-      include: {
-        bookings: true,
-      },
     });
-    return user ?? undefined;
-  }
+    return mapUser(user) ?? undefined;
+  },
 
   async createUser(data: CreateUserData): Promise<User> {
-    const user: User = await prisma.user.create({
+    const user = prisma.user.create({
       data: {
-        name: data.name,
-        email: data.email,
-        password: data.password,
+        ...data,
         role: ROLES.GUEST,
       },
     });
-
-    return user;
-  }
+    return mapUser(user);
+  },
 
   async updateUser(userId: string, updates: UpdateUserData): Promise<User | undefined> {
-    const user: User = await prisma.user.update({
+    const user = await prisma.user.update({
       where: { id: userId },
       data: updates,
     });
-
-    return user;
-  }
+    return mapUser(user) ?? undefined;
+  },
 
   async deleteUser(userId: string): Promise<void> {
     await prisma.user.delete({
-      where: { id: userId},
+      where: { id: userId },
     });
-  }
-}
+  },
+};
