@@ -1,0 +1,30 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Back.Dockerfile
+    container_name: hotel-backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - apps/backend/.env
+    networks:
+      - hotel-net
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Front.Dockerfile
+    container_name: hotel-frontend
+    ports:
+      - "8080:80"
+    environment:
+      - VITE_API_URL=http://backend:3000
+    depends_on:
+      - backend
+    networks:
+      - hotel-net
+
+networks:
+  hotel-net:
+    driver: bridge
