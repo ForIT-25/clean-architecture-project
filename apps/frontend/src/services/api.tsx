@@ -28,7 +28,7 @@ export interface AuthResponse {
   }
 }
 
-const API_BASE_URL = 'localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const API_URL_HOTEL = `${API_BASE_URL}/api/hotels`;
 const API_URL_ROOM = `${API_BASE_URL}/api/rooms`;
 const API_URL_BOOKING = `${API_BASE_URL}/api/bookings`;

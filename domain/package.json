@@ -2,8 +2,11 @@
   "name": "@hotel-project/domain",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+
   "scripts": {
+    "build": "tsc --project tsconfig.json",
     "test": "vitest src/",
     "test:hotel": "vitest src/use-cases/hotel",
     "test:room": "vitest src/use-cases/room",
@@ -12,6 +15,7 @@
     "lint": "eslint .",
     "format": "prettier --write ."
   },
+
   "keywords": [],
   "author": "",
   "license": "ISC",

@@ -6,27 +6,36 @@
 
   "workspaces": [
     "domain",
-    "apps/backend"
+    "apps/backend",
+    "apps/frontend"
   ],
 
   "scripts": {
+    "build": "npm -w @hotel-project/domain run build && npm -w @hotel-project/backend run build",
+
+    "dev:back": "npm -w @hotel-project/backend run dev",
+
+    "test": "npm run build && vitest",
+    "test:domain": "npm -w @hotel-project/domain run build && vitest domain/src",
+    "test:back": "npm -w @hotel-project/domain run build && vitest apps/backend/src",
+
+    "lint": "eslint .",
+    "format": "prettier --write .",
+
     "prisma:generate": "npm -w @hotel-project/backend run prisma:generate",
     "prisma:migrate": "npm -w @hotel-project/backend run prisma:migrate",
-    "prisma:reset": "npm -w @hotel-project/backend run prisma:reset",
-    "test": "vitest",
-    "test:domain": "vitest domain/src",
-    "test:back": "vitest apps/backend/src",
-    "lint": "eslint .",
-    "format": "prettier --write ."
+    "prisma:reset": "npm -w @hotel-project/backend run prisma:reset"
   },
 
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ForIT-25/clean-architecture-project.git"
   },
+
   "bugs": {
     "url": "https://github.com/ForIT-25/clean-architecture-project/issues"
   },
+
   "homepage": "https://github.com/ForIT-25/clean-architecture-project#readme",
 
   "devDependencies": {

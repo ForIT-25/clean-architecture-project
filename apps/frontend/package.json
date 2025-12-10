@@ -1,5 +1,5 @@
 {
-  "name": "hotel-management",
+  "name": "@hotel-project/frontend",
   "private": true,
   "version": "1.0.0",
   "type": "module",
