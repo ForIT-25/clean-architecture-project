@@ -8,6 +8,8 @@ services:
       - "3000:3000"
     env_file:
       - apps/backend/.env
+    volumes:
+      - backend_db_data:/app/prisma/dev.db
     networks:
       - hotel-net
 
@@ -28,3 +30,6 @@ services:
 networks:
   hotel-net:
     driver: bridge
+
+volumes:
+  backend_db_data:
