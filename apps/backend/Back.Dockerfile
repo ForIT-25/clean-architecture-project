@@ -6,7 +6,7 @@ COPY package.json package-lock.json ./
 COPY apps/backend/package.json apps/backend/
 COPY domain/package.json domain/
 
-RUN npm install --workspaces --legacy-peer-deps
+RUN npm install --workspaces
 
 COPY . .
 
