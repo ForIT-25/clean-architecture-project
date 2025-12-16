@@ -1,8 +1,11 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  /* config options here */
-  reactCompiler: true,
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  transpilePackages: ["@hotel-project/domain"],
+  typescript: {
+    tsconfigPath: "./tsconfig.json"
+  }
 };
 
 export default nextConfig;
